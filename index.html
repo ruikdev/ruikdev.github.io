@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation API Horaires T2C</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            position: relative;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .endpoint {
+            background-color: #e7f2fa;
+            padding: 10px;
+            border-left: 5px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .example {
+            background-color: #eafaf1;
+            padding: 10px;
+            border-left: 5px solid #2ecc71;
+            margin-top: 20px;
+        }
+        #testForm {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Documentation API Horaires T2C</h1>
+    
+    <h2>Description</h2>
+    <p>Cette API permet de récupérer les horaires de départ des bus T2C pour un arrêt spécifique.</p>
+    <p>⚠️Cette API <strong>n'est pas</strong> affiliée à <a href="https://www.t2c.fr/">t2c</a>⚠️</p>
+    
+    <h2>Endpoint</h2>
+    <div class="endpoint">
+        <code>GET http://172.252.236.136:2064/horaire/&lt;stop_id&gt;</code>
+        <p>Récupère les horaires pour l'arrêt spécifié par <code>stop_id</code>.</p>
+    </div>
+    
+    <h2>Paramètres</h2>
+    <ul>
+        <li><code>stop_id</code> (obligatoire) : L'identifiant de l'arrêt de bus.</li>
+    </ul>
+    
+    <h2>Réponse</h2>
+    <p>La réponse est au format JSON et contient les champs suivants :</p>
+    <ul>
+        <li><code>departures</code> : Un tableau d'objets représentant les départs prévus.</li>
+        <li><code>perturbation</code> : Une chaîne de caractères indiquant une éventuelle perturbation (peut être null).</li>
+    </ul>
+
+
+    <h2>Code source</h2>
+    <ul>
+        <li><code>github API</code> : <a href="https://github.com/ruikdev/bus-api">https://github.com/ruikdev/bus-api</a></li>
+        <li><code>github horary</code> : <a href="https://github.com/ruikdev/horary-t2c">https://github.com/ruikdev/horary-t2c</a></li>
+        <li><code>github du site web</code> : <a href="https://github.com/ruikdev/site-web-api-t2c">https://github.com/ruikdev/site-web-api-t2c</a></li>
+        <li><code>github du système de bdd</code> : <a href="https://github.com/Oxmel/t2c-harvester">https://github.com/Oxmel/t2c-harvester</a></li>
+    </ul>
+    
+    <h2>Exemple d'utilisation</h2>
+    <div class="example">
+        <h3>Exemple de code Python</h3>
+        <pre><code id="example-code">
+import requests
+import json
+
+
+def test_api(stop_id):
+    url = f"http://172.252.236.136:2064/horaire/{stop_id}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        data = response.json()
+
+        print(f"Horaires pour l'arrêt {stop_id}:")
+        print("-" * 50)
+
+        if "departures" in data:
+            for departure in data["departures"]:
+                print(
+                    f"Ligne {departure['ligne']:3} | {departure['destination']:20} | Départ : {departure['depart']:10} | {departure['info']}")
+
+        if "perturbation" in data and data["perturbation"]:
+            print("\n⚠️ ATTENTION :")
+            print(data["perturbation"])
+
+    except requests.RequestException as e:
+        print(f"Erreur lors de la requête : {e}")
+    except json.JSONDecodeError:
+        print("Erreur lors du décodage de la réponse JSON")
+    except Exception as e:
+        print(f"Une erreur inattendue s'est produite : {e}")
+
+
+stop_id = "3377704015496260"  # Remplacez par l'ID de l'arrêt que vous voulez tester
+test_api(stop_id)
+        </code></pre>
+        <button class="copy-button" onclick="copyCode()">Copier le code</button>
+    </div>
+
+    <script>
+        function copyCode() {
+            const codeElement = document.getElementById('example-code');
+            const textArea = document.createElement('textarea');
+            textArea.value = codeElement.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Code copié dans le presse-papiers !');
+        }
+    </script>
+</body>
+</html>
