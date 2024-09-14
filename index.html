@@ -87,33 +87,58 @@
     </div>
     
     <h2>Description</h2>
-    <p>Cette API permet de récupérer les horaires de départ des bus T2C pour un arrêt spécifique.</p>
+    <p>Cette API permet de récupérer les horaires de départ des bus T2C pour un arrêt spécifique, ainsi que les données de tous les arrêts.</p>
     <p>⚠️Cette API <strong>n'est pas</strong> affiliée à <a href="https://www.t2c.fr/">t2c</a>⚠️</p>
     
-    <h2>Endpoint</h2>
+    <h2>Endpoints</h2>
     <div class="endpoint">
         <code>GET http://172.252.236.136:2064/horaire/&lt;stop_id&gt;</code>
         <p>Récupère les horaires pour l'arrêt spécifié par <code>stop_id</code>.</p>
     </div>
+    <div class="endpoint">
+        <code>GET http://172.252.236.136:2064/arrets</code>
+        <p>Récupère les données de tous les arrêts du réseau T2C.</p>
+    </div>
     
     <h2>Paramètres</h2>
+    <h3>Pour /horaire/&lt;stop_id&gt;</h3>
     <ul>
         <li><code>stop_id</code> (obligatoire) : L'identifiant de l'arrêt de bus.</li>
     </ul>
+    <h3>Pour /arrets</h3>
+    <p>Aucun paramètre requis.</p>
     
-    <h2>Réponse</h2>
+    <h2>Réponses</h2>
+    <h3>Pour /horaire/&lt;stop_id&gt;</h3>
     <p>La réponse est au format JSON et contient les champs suivants :</p>
     <ul>
         <li><code>departures</code> : Un tableau d'objets représentant les départs prévus.</li>
         <li><code>perturbation</code> : Une chaîne de caractères indiquant une éventuelle perturbation (peut être null).</li>
     </ul>
-
+    <h3>Pour /arrets</h3>
+    <p>La réponse est au format JSON et contient les champs suivants :</p>
+    <ul>
+        <li><code>lines</code> : Un tableau d'objets représentant les lignes de bus, chacune contenant :</li>
+        <ul>
+            <li><code>line_name</code> : Le nom de la ligne.</li>
+            <li><code>line_num</code> : Le numéro de la ligne.</li>
+            <li><code>directions</code> : Un tableau d'objets représentant les directions de la ligne, chacune contenant :</li>
+            <ul>
+                <li><code>dir_name</code> : Le nom de la direction.</li>
+                <li><code>dir_num</code> : Le numéro de la direction.</li>
+                <li><code>stops</code> : Un tableau d'objets représentant les arrêts de cette direction, chacun contenant :</li>
+                <ul>
+                    <li><code>stop_name</code> : Le nom de l'arrêt.</li>
+                    <li><code>stop_num</code> : Le numéro de l'arrêt.</li>
+                </ul>
+            </ul>
+        </ul>
+    </ul>
 
     <h2>Code source</h2>
     <ul>
         <li><code>github API</code> : <a href="https://github.com/ruikdev/bus-api">https://github.com/ruikdev/bus-api</a></li>
         <li><code>github horary</code> : <a href="https://github.com/ruikdev/horary-t2c">https://github.com/ruikdev/horary-t2c</a></li>
-        <li><code>github du site web</code> : <a href="https://github.com/ruikdev/site-web-api-t2c">https://github.com/ruikdev/site-web-api-t2c</a></li>
         <li><code>github du système de bdd</code> : <a href="https://github.com/Oxmel/t2c-harvester">https://github.com/Oxmel/t2c-harvester</a></li>
     </ul>
     
@@ -123,7 +148,6 @@
         <pre><code id="example-code">
 import requests
 import json
-
 
 def test_horaires(stop_id):
     url = f"http://172.252.236.136:2064/horaire/{stop_id}"
@@ -151,7 +175,6 @@ def test_horaires(stop_id):
     except Exception as e:
         print(f"Une erreur inattendue s'est produite : {e}")
 
-
 def test_arrets():
     url = "http://172.252.236.136:2064/arrets"
     try:
@@ -176,7 +199,6 @@ def test_arrets():
     except Exception as e:
         print(f"Une erreur inattendue s'est produite : {e}")
 
-
 def main():
     while True:
         print("\nChoisissez une option :")
@@ -197,10 +219,8 @@ def main():
         else:
             print("Choix invalide. Veuillez réessayer.")
 
-
 if __name__ == "__main__":
     main()
-
         </code></pre>
         <button class="copy-button" onclick="copyCode()">Copier le code</button>
     </div>
